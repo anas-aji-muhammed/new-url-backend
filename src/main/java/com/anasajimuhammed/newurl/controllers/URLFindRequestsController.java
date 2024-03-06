@@ -1,5 +1,6 @@
 package com.anasajimuhammed.newurl.controllers;
 
+import com.anasajimuhammed.newurl.models.ClickEvents;
 import com.anasajimuhammed.newurl.models.URLModel;
 import com.anasajimuhammed.newurl.services.impl.URLOperationsServiceImpl;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,9 @@ public class URLFindRequestsController {
         URLModel originalUrl = urlOperationsService.getURL(urlHash);
 
         if (originalUrl != null) {
+            ClickEvents clickEvent = new ClickEvents();
+            clickEvent.setUrlId(originalUrl.getId());
+            urlOperationsService.urlClickEventAdd(clickEvent);
             // Redirect to the original URL
             return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(originalUrl.getOriginalURL())).build();
         } else {

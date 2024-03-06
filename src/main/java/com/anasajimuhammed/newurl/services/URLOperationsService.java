@@ -1,7 +1,9 @@
 package com.anasajimuhammed.newurl.services;
 
+import com.anasajimuhammed.newurl.models.ClickEvents;
 import com.anasajimuhammed.newurl.models.URLModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,4 +19,6 @@ public interface URLOperationsService {
 
 
 
+    void urlClickEventAdd(ClickEvents clickEvent);
+    List<ClickEvents> getUrlAnalytics(Long id, LocalDateTime start, LocalDateTime end);
 }

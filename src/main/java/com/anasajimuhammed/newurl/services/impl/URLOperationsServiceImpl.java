@@ -1,14 +1,15 @@
 package com.anasajimuhammed.newurl.services.impl;
 
+import com.anasajimuhammed.newurl.models.ClickEvents;
 import com.anasajimuhammed.newurl.models.URLModel;
+import com.anasajimuhammed.newurl.repository.ClickEventsRepository;
 import com.anasajimuhammed.newurl.repository.UrlStoreSQLRepository;
 import com.anasajimuhammed.newurl.services.URLOperationsService;
 import com.anasajimuhammed.newurl.utils.UrlShortenUtil;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,6 +17,7 @@ import java.util.List;
 public class URLOperationsServiceImpl implements URLOperationsService {
 
     private UrlStoreSQLRepository urlStoreSQLRepository;
+    private ClickEventsRepository clickEventsRepository;
     private static int SHORT_URL_CHAR_SIZE=7;
 
 
@@ -25,15 +27,14 @@ public class URLOperationsServiceImpl implements URLOperationsService {
         String hash = UrlShortenUtil.md5UrlShorten(urlData);
         int numberOfCharsInHash = hash.length();
         int counter = 0;
-        return  hash.substring(0, counter + SHORT_URL_CHAR_SIZE);
-//        while (counter < numberOfCharsInHash - SHORT_URL_CHAR_SIZE) {
-//            if (!DB.exists(hash.substring(counter, counter + SHORT_URL_CHAR_SIZE))) {
-//                return hash.substring(counter, counter + SHORT_URL_CHAR_SIZE);
-//            }
-//            Optional<List<URLModel>> existingHashes =  urlStoreSQLRepository.findByurlHash(urlData.getUrlHash());
-//            counter++;
-//            return null;
-//        }
+//        return  hash.substring(0, counter + SHORT_URL_CHAR_SIZE);
+        while (counter < numberOfCharsInHash - SHORT_URL_CHAR_SIZE) {
+            if (!urlStoreSQLRepository.existsByUrlHash(hash.substring(counter, counter + SHORT_URL_CHAR_SIZE))) {
+                return hash.substring(counter, counter + SHORT_URL_CHAR_SIZE);
+            }
+            counter++;
+        }
+        return hash;
     }
 
     @Override
@@ -67,4 +68,24 @@ public class URLOperationsServiceImpl implements URLOperationsService {
     public List<URLModel> getURLs() {
         return urlStoreSQLRepository.findAll();
     }
+
+    @Override
+    public void urlClickEventAdd(ClickEvents clickEvent) {
+        clickEventsRepository.save(clickEvent);
+    }
+
+    @Override
+    public List<ClickEvents> getUrlAnalytics(Long id, LocalDateTime start, LocalDateTime end) {
+        if(start!=null){
+            return clickEventsRepository.findClicksByUrlIdAndDateRange(id, start, end);
+
+        }
+
+        else{
+            return clickEventsRepository.findAllByUrlId(id);
+
+        }
+    }
+
+
 }

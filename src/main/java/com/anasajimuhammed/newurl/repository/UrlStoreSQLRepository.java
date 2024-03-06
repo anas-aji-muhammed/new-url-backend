@@ -10,4 +10,6 @@ import java.util.List;
 public interface UrlStoreSQLRepository extends JpaRepository<URLModel, Long> {
     URLModel findByUrlHash(String hashUrl);
 
+    Boolean existsByUrlHash(String hash);
+
 }

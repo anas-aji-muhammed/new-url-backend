@@ -1,4 +1,5 @@
 package com.anasajimuhammed.newurl.controllers;
+import com.anasajimuhammed.newurl.dto.AnalyticsDataDTO;
 import com.anasajimuhammed.newurl.dto.URLDataResponseModel;
 import com.anasajimuhammed.newurl.models.URLModel;
 import com.anasajimuhammed.newurl.repository.UrlStoreSQLRepository;
@@ -7,8 +8,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -33,6 +36,17 @@ public class UrlShortenController {
         urlDataResponse.setUrlData(urlOperationsService.getURLs());
         urlDataResponse.setBaseURL(env.getProperty("app.baseUrl"));
         return urlDataResponse;
+    }
+
+    @GetMapping("analytics/{urlId}")
+    public AnalyticsDataDTO getAnalytics(
+            @PathVariable Long urlId,
+            @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        AnalyticsDataDTO analyticsDataDTO = new AnalyticsDataDTO();
+        analyticsDataDTO.setClickEventsList(urlOperationsService.getUrlAnalytics(urlId, startDate, endDate));
+        analyticsDataDTO.setTotalCount((long) analyticsDataDTO.getClickEventsList().size());
+        return analyticsDataDTO;
     }
 
 
