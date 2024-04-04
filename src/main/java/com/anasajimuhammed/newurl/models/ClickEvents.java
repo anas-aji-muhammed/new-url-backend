@@ -17,6 +17,11 @@ public class ClickEvents {
     @Column(name = "url_id")
     private Long urlId; // Assume this links to your URL entity
 
+    private String linkSource;
+    private String userAgent;
+    private String Country;
+    private String City;
+
     private LocalDateTime clickedAt;
     @PrePersist
     protected void onCreate() {

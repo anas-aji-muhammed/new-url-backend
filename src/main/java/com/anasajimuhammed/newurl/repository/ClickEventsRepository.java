@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface ClickEventsRepository extends JpaRepository<ClickEvents, Long> {
     List<ClickEvents> findAllByUrlId(Long id);
-
     @Query("SELECT ce FROM ClickEvents ce WHERE ce.urlId = :urlId AND ce.clickedAt BETWEEN :startDate AND :endDate")
     List<ClickEvents> findClicksByUrlIdAndDateRange(@Param("urlId") Long urlId,
                                                     @Param("startDate") LocalDateTime startDate,

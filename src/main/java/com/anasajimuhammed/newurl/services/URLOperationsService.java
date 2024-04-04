@@ -21,4 +21,6 @@ public interface URLOperationsService {
 
     void urlClickEventAdd(ClickEvents clickEvent);
     List<ClickEvents> getUrlAnalytics(Long id, LocalDateTime start, LocalDateTime end);
+
+    public void aggregateUrlData();
 }

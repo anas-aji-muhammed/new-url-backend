@@ -5,6 +5,7 @@ import com.anasajimuhammed.newurl.models.URLModel;
 import com.anasajimuhammed.newurl.repository.UrlStoreSQLRepository;
 import com.anasajimuhammed.newurl.services.impl.URLOperationsServiceImpl;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -34,18 +35,25 @@ public class UrlShortenController {
     public URLDataResponseModel getUrls(){
         URLDataResponseModel urlDataResponse = new URLDataResponseModel();
         urlDataResponse.setUrlData(urlOperationsService.getURLs());
-        urlDataResponse.setBaseURL(env.getProperty("app.baseUrl"));
+//        urlDataResponse.setBaseURL(env.getProperty("app.baseUrl"));
+        urlDataResponse.setBaseURL(env.getProperty("app.proxyUrl"));
+        System.out.println(urlDataResponse);
         return urlDataResponse;
     }
 
-    @GetMapping("analytics/{urlId}")
+    @GetMapping("analytics/{urlHash}")
     public AnalyticsDataDTO getAnalytics(
-            @PathVariable Long urlId,
+            @PathVariable String urlHash,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         AnalyticsDataDTO analyticsDataDTO = new AnalyticsDataDTO();
-        analyticsDataDTO.setClickEventsList(urlOperationsService.getUrlAnalytics(urlId, startDate, endDate));
-        analyticsDataDTO.setTotalCount((long) analyticsDataDTO.getClickEventsList().size());
+        analyticsDataDTO.setUrlDetails(urlOperationsService.getURL(urlHash));
+        analyticsDataDTO.setBaseURL(env.getProperty("app.proxyUrl"));
+        analyticsDataDTO.setLinkAnalyticsData(
+                urlOperationsService.getAggregatedUrlAnalytics(analyticsDataDTO.getUrlDetails().getId())
+        );
+
+        analyticsDataDTO.setTotalCount(analyticsDataDTO.getUrlDetails().getCount());
         return analyticsDataDTO;
     }
 

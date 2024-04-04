@@ -15,5 +15,5 @@ import java.util.List;
 public class URLDataResponseModel {
 
     List<URLModel> urlData;
-    String BaseURL;
+    String baseURL;
 }
